@@ -1,5 +1,7 @@
 const express = require('express');
 const cors = require('cors');
+const fs = require('fs');
+const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 4000;
 
@@ -155,38 +157,14 @@ app.post('/api/advance', (req, res) => {
   res.json({ packets });
 });
 
-// Backend: Simulate one interval: generate and send packets
-app.post('/api/simulate-interval', (req, res) => {
-  const time = trafficTimes[timeIndex];
-  const rates = trafficRates[time];
 
-  // For each node, generate packets according to rates
-  Object.entries(rates).forEach(([nodeName, rate]) => {
-    // For demo, send all packets to a random other node
-    for (let i = 0; i < rate; i++) {
-      let dest;
-      do {
-        dest = getNodeName(Math.floor(Math.random() * nodes.length));
-      } while (dest === nodeName);
+// Serve static files from build directory
+const buildPath = path.join(__dirname ,'build');
+app.use(express.static(buildPath));
 
-      // Find path using links (BFS, respecting capacities)
-      const path = findPathByName(nodeName, dest);
-      if (path) {
-        packets.push({
-          id: Date.now() + Math.random(),
-          from: getNodeIndex(nodeName),
-          to: getNodeIndex(dest),
-          path: path.map(getNodeIndex),
-          payload: `Auto ${time}`,
-          progress: 0,
-        });
-      }
-    }
-  });
-
-  // Advance time
-  timeIndex = (timeIndex + 1) % trafficTimes.length;
-  res.json({ success: true, time: trafficTimes[timeIndex] });
+// For all non-API routes, serve index.html (for client-side routing)
+app.get(/^\/(?!api).*/, (req, res) => {
+  res.sendFile(path.join(buildPath, 'index.html'));
 });
 
 
