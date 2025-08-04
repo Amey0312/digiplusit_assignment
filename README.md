@@ -1,6 +1,6 @@
 1. Clone the Repository
 
-git clone https://github.com/your-username/your-repo-name.git
+git clone : [github.com/your-username/your-repo-name.git](https://github.com/Amey0312/digiplusit_assignment/tree/main)
 cd your-repo-name
 
 2. Install Backend Dependencies
